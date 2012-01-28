@@ -1,3 +1,5 @@
+# This example prints the value from the joystick whenever it gets changed
+
 from struct import *
 
 joystick = open("/dev/input/js0", 'r')
