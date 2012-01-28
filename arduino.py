@@ -1,4 +1,7 @@
 #!/usr/bin/python
+# This controls the arduino using the joystick
+#
+
 from getopt import getopt
 from serial import Serial
 from time import sleep
