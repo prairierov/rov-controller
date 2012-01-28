@@ -1,4 +1,7 @@
 #!/usr/bin/python
+# This controls the motors using the parallel port.
+#
+
 from getopt import getopt
 from serial import Serial
 from time import sleep
@@ -18,6 +21,10 @@ pins = [('L/R (9)<br>', 2), ('F/B (10)<br>', 4), ('Twist (11)<br>', 6), ('Slider
 axis_map = {0: 2, 1: 4, 2: 6, 3: 8, 4: 7, 5: 9}
 axis_mult = {0: 1, 1: -1, 2: 1, 3: 1, 4: 1, 5: -1}
 
+##
+## Code for controlling Arduino, doesn't actually do anything
+## To control the Arduino, use arduino.py instead
+##
 port = '/dev/ttyACM0'
 (opts, args) = getopt(argv[1:], 'p:')
 for (opt, val) in opts:
@@ -91,12 +98,14 @@ def get_pin_num(name):
     except ValueError:
         return False
 def set_pin(pin, value):
-    #outqueue.put("%d %d\n" % (value, pin))
     print pin, "=", value
     sign = 1 if value < 0 else 0
     parapwm.set_pin(pin, abs(value))
     parapwm.set_pin(pin+1, sign*255)
 
+##
+## Get the position of the joystick
+##
 stick = open('/dev/input/js0', 'r')
 print "joystick:", stick
 def js_event(joystick):
@@ -117,10 +126,11 @@ def joythread():
             value = int(e['value']*256/32768)
             set_pin(pin, value)
             app.newPinValue.emit(pin, value)
-            
 joythread = Thread(target=joythread)
 
-
+##
+## Displays values for all of the motors
+##
 class KBSlider(QSlider):
     def keyPressEvent(self, event):
         if event.text().isdigit():
