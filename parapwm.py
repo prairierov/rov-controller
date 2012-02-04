@@ -16,7 +16,7 @@ import threading
 from fractions import gcd
 from threading import Lock
 
-port = Port(LPT1, outmode=LP_DATA_PINS)
+port = Port(LPT1, outmode=LP_DATA_PINS|LP_PIN14|LP_PIN16|LP_PIN17|LP_PIN01)
 
 pwmthread = None
 pins = []
