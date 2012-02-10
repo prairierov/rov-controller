@@ -13,9 +13,24 @@ from array import array
 import string
 from struct import *
 import parapwm
+from parapin.CONST import *
 import re
 try: from Queue import Queue, Empty
 except ImportError: from queue import Queue, Empty
+
+#
+# If pins are low, they might draw too much current
+#
+bad_pins = list()
+parapwm.port.set_output_mode(0)
+parapwm.port.set_input_mode(LP_DATA_PINS | LP_SWITCHABLE_PINS)
+for i in range(1,17):
+    pin = parapwm.port[i]
+    if pin.is_set() == False:
+        print "Pin %d is bad." % i
+        bad_pins.append(i)
+parapwm.port.set_input_mode(0)
+parapwm.port.set_output_mode(LP_DATA_PINS | LP_SWITCHABLE_PINS)
 
 pins = [('L/R (2/3)<br>', 2), ('F/B (4/5)<br>', 4), ('Twist (6/7)<br>', 6), ('Slider (8/9)<br>', 8)]
 axis_map = {0: 2, 1: 4, 2: 6, 3: 8}
@@ -37,7 +52,12 @@ def set_pin(pin, value):
 ##
 ## Get the position of the joystick
 ##
-stick = open('/dev/input/js0', 'r')
+global stick
+try:
+    stick = open('/dev/input/js0', 'r')
+except:
+    print "No stick!"
+    stick = None
 print "joystick:", stick
 def js_event(joystick):
     data = joystick.read(8)
@@ -116,6 +136,13 @@ class MainWindow(QDialog):
             sliders.addLayout(pinLayout)
         layout = QVBoxLayout()
         layout.addLayout(sliders)
+        if stick == None:
+            label = QLabel("<span style='color:red'>No joystick. Plug in a joystick and restart the program.</span>")
+            layout.addWidget(label)
+        for i in bad_pins:
+            print "Bad pin", i
+            label = QLabel("<span style='color:darkorange'>Pin %d is low. This is probably bad.</span>" % i)
+            layout.addWidget(label)
         button = QPushButton("Reload")
         button.clicked.connect(lambda: outqueue.put("deadbeef\n"))
         layout.addWidget(button)
