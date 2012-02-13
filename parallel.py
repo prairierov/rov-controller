@@ -19,6 +19,17 @@ try: from Queue import Queue, Empty
 except ImportError: from queue import Queue, Empty
 
 #
+# Read command-line options
+#
+opts, args = getopt(argv[1:], "", ['polulu'])
+global polulu
+polulu = False
+for opt in opts:
+    if opt[0] == '--polulu':
+        polulu = True
+if polulu: print "Polulu mode"
+
+#
 # If pins are low, they might draw too much current
 #
 bad_pins = list()
@@ -32,7 +43,11 @@ for i in range(1,17):
 parapwm.port.set_input_mode(0)
 parapwm.port.set_output_mode(LP_DATA_PINS | LP_SWITCHABLE_PINS)
 
-pins = [('L/R (2/3)<br>', 2), ('F/B (4/5)<br>', 4), ('Twist (6/7)<br>', 6), ('Slider (8/9)<br>', 8)]
+global pins
+if polulu:
+    pins = [('L/R (1/2/3)<br>', 1), ('F/B (4/5/6)<br>', 4), ('Twist (14/16/17)<br>', 14), ('Slider (7/8/9)<br>', 7)]
+else:
+    pins = [('L/R (2/3)<br>', 2), ('F/B (4/5)<br>', 4), ('Twist (6/7)<br>', 6), ('Slider (8/9)<br>', 8)]
 axis_map = {0: 2, 1: 4, 2: 6, 3: 8}
 axis_mult = {0: 1, 1: -1, 2: 1, 3: -1}
 button_map = {1: 1, 4: 14, 5: 16, 6: 17}
@@ -46,8 +61,15 @@ def get_pin_num(name):
 def set_pin(pin, value):
     print pin, "=", value
     sign = 1 if value < 0 else 0
-    parapwm.set_pin(pin, abs(value))
-    parapwm.set_pin(pin+1, sign*255)
+    if pin == 2: # centered = full power
+        parapwm.set_pin(pin, abs(255 - abs(value)))
+    else:
+        parapwm.set_pin(pin, abs(value))
+    if polulu:
+        parapwm.set_pin(pin+1, 255 if sign == 0 else 0)
+        parapwm.set_pin(pin+2, 0 if sign == 0 else 255)
+    else:
+        parapwm.set_pin(pin+1, sign*255)
 
 ##
 ## Get the position of the joystick
