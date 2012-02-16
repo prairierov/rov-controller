@@ -14,6 +14,7 @@ import string
 from struct import *
 import parapwm
 from parapin.CONST import *
+from select import select
 import re
 try: from Queue import Queue, Empty
 except ImportError: from queue import Queue, Empty
@@ -82,6 +83,7 @@ except:
     stick = None
 print "joystick:", stick
 def js_event(joystick):
+    while not select([stick.fileno()], [], [], 1)[0]: False
     data = joystick.read(8)
     info = unpack('LhBB', data)
     if info[2] & 1 > 0:
@@ -165,9 +167,6 @@ class MainWindow(QDialog):
             print "Bad pin", i
             label = QLabel("<span style='color:darkorange'>Pin %d is low. This is probably bad.</span>" % i)
             layout.addWidget(label)
-        button = QPushButton("Reload")
-        button.clicked.connect(lambda: outqueue.put("deadbeef\n"))
-        layout.addWidget(button)
         self.setLayout(layout)
 
 arduino_is_setting_pin = False

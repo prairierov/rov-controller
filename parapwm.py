@@ -36,7 +36,7 @@ def do_pwm_thread():
                 if pins[pin] == -1: continue
                 if i < pins[pin]:
                     port.get_pin(pin).set()
-                else:
+                elif pins[pin] < 255:
                     port.get_pin(pin).clear()
             sleep(DELAY)
             i += 1
