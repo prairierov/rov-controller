@@ -16,6 +16,9 @@ import threading
 from fractions import gcd
 from threading import Lock
 
+global DELAY
+DELAY = 0.0000001
+
 port = Port(LPT1, outmode=LP_DATA_PINS|LP_PIN14|LP_PIN16|LP_PIN17|LP_PIN01)
 
 pwmthread = None
@@ -35,7 +38,7 @@ def do_pwm_thread():
                     port.get_pin(pin).set()
                 else:
                     port.get_pin(pin).clear()
-            sleep(0.00001)
+            sleep(DELAY)
             i += 1
 
 def set_pin(pin, cycle):
