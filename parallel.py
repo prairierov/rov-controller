@@ -109,6 +109,7 @@ def joythread():
             set_pin(pin, 255 if e['button'] else 0)
             
 joythread = Thread(target=joythread)
+joythread.daemon = True
 
 ##
 ## Displays values for all of the motors
@@ -185,5 +186,7 @@ joythread.start()
 app.newPinValue.connect(app.updateSlider)
 w = MainWindow()
 w.show()
+w.raise_()
+w.activateWindow()
 app.exec_()
 exit()
