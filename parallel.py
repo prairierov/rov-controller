@@ -62,14 +62,20 @@ def get_pin_num(name):
 def set_pin(pin, value):
     print pin, "=", value
     sign = 1 if value < 0 else 0
-    if pin == 2: # centered = full power
+    #if pin == 2: # centered = full power
+    #    #parapwm.set_pin(pin, abs(255 - abs(value)))
+    #    parapwm.set_pin(pin, 255 if abs(value) < 128 else 0)
+    if pin == 8:
         parapwm.set_pin(pin, abs(255 - abs(value)))
     else:
-        parapwm.set_pin(pin, abs(value))
+        setting = 255 if abs(value) >= 128 else 0
+        print pin, "=", setting
+        parapwm.set_pin(pin, setting)
     if polulu:
         parapwm.set_pin(pin+1, 255 if sign == 0 else 0)
         parapwm.set_pin(pin+2, 0 if sign == 0 else 255)
     else:
+        print pin+1, "=", sign*255
         parapwm.set_pin(pin+1, sign*255)
 
 ##
@@ -104,8 +110,6 @@ def joythread():
         elif 'button' in e and e['button'] in button_map:
             pin = button_map[e['button']]
             value = 255 if e['value'] else 0
-            print "hi"
-            print pin, "=", value
             set_pin(pin, 255 if e['button'] else 0)
             
 joythread = Thread(target=joythread)
