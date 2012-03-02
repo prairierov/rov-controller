@@ -58,6 +58,7 @@ int setPin(int pin, int value) {
 int main(const int argc, const char *argv) {
     if (pin_init_user(LPT1))
         fprintf(stderr, "oh snap\n");
+    pin_output_mode(LP_DATA_PINS | LP_SWITCHABLE_PINS);
     /*sleep(1);
     setPin(2, 127);
     sleep(1);
@@ -65,6 +66,6 @@ int main(const int argc, const char *argv) {
     sleep(10);*/
     struct pwm_thread_info info;
     info.pinNum = 2;
-    pinlevels[2] = 255;
+    pinlevels[2] = 127;
     do_pin_thread(&info);
 }

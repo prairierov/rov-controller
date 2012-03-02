@@ -120,6 +120,14 @@ Pin_nonzero(PinObject *self){
     return (pin_is_set(self->pin));
 };
 
+static PyObject *
+Pin_write(PinObject *self, PyObject *args) {
+    int level;
+    if (!PyArg_ParseTuple(args, "i", &level))
+        return NULL;
+    setPin(self->pin, level);
+}
+
 //static void sigint_handler(int sig) {
 //    printf("caught %d\n", sig);
 //    exit(0);
@@ -282,6 +290,8 @@ static PyMethodDef Pin_methods[] = {
      "P.clear() -- clear this pin"},
     {"change", (PyCFunction)Pin_change, METH_VARARGS,
      "P.change(state) -- change this pin state"},
+    {"write", (PyCFunction)Pin_write, METH_VARARGS,
+     "P.write(level) - set level from 0 to 255"},
     {"pulse", (PyCFunction)Pin_pulse, METH_VARARGS,
      "P.pulse(mon, non, moff, noff, n) -- send 'n' pulses"},
     {"is_set", (PyCFunction)Pin_is_set, METH_NOARGS,

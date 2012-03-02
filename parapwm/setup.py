@@ -1,8 +1,8 @@
 from distutils.core import setup, Extension
 
 module = Extension('parapwm_c',
-                    sources=['parapin_py.c'],
-                    include_dirs=['../'],
+                    sources=['parapin_py.c', 'paradriver.c'],
+                    include_dirs=['../', './'],
                     libraries=['parapin'],
                     library_dirs=['../'])
 
