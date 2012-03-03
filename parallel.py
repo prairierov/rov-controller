@@ -62,10 +62,10 @@ def get_pin_num(name):
 def set_pin(pin, value):
     print pin, "=", value
     sign = 1 if value < 0 else 0
-    #if pin == 2: # centered = full power
-    #    #parapwm.set_pin(pin, abs(255 - abs(value)))
-    #    parapwm.set_pin(pin, 255 if abs(value) < 128 else 0)
-    parapwm.set_pin(pin, abs(value))
+    if pin == 8: # centered = full power
+        parapwm.set_pin(pin, abs(255 - abs(value)))
+    else:
+        parapwm.set_pin(pin, abs(value))
     if polulu:
         parapwm.set_pin(pin+1, 255 if sign == 0 else 0)
         parapwm.set_pin(pin+2, 0 if sign == 0 else 255)

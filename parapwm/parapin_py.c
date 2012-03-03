@@ -109,7 +109,6 @@ Pin_change(PinObject *self, PyObject *args){
 /* Pin.is_set() */
 static PyObject *
 Pin_is_set(PinObject *self){
-
   return Py_BuildValue("i", pin_is_set(self->pin));
 };
 
@@ -122,10 +121,26 @@ Pin_nonzero(PinObject *self){
 
 static PyObject *
 Pin_write(PinObject *self, PyObject *args) {
-    int level;
+    puts("hi");
+    int level = 127;
     if (!PyArg_ParseTuple(args, "i", &level))
         return NULL;
-    setPin(self->pin, level);
+    int pinbit = self->pin;
+    int i, pinnum = -1;
+    for (i = 2; i <= 9; i++)
+        if (pinbit == LP_PIN[i]) {
+            pinnum = i;
+            break;
+        }
+    if (pinnum == -1) {
+        fputs("aw snap\n", stderr);
+        return NULL;
+    }
+    printf("python: %1d = %d\n", pinnum, level);
+    setPin(pinnum, level);
+    puts("done");
+    Py_INCREF(args);
+    return args;
 }
 
 //static void sigint_handler(int sig) {
