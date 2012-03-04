@@ -121,10 +121,13 @@ Pin_nonzero(PinObject *self){
 
 static PyObject *
 Pin_write(PinObject *self, PyObject *args) {
-    puts("hi");
+    //puts("hi");
     int level = 127;
-    if (!PyArg_ParseTuple(args, "i", &level))
+    if (!PyArg_ParseTuple(args, "i", &level)) {
+        PyErr_SetString(PyExc_ValueError, 
+		    "need integer cycle value");
         return NULL;
+    }
     int pinbit = self->pin;
     int i, pinnum = -1;
     for (i = 2; i <= 9; i++)
@@ -133,12 +136,13 @@ Pin_write(PinObject *self, PyObject *args) {
             break;
         }
     if (pinnum == -1) {
-        fputs("aw snap\n", stderr);
+        fprintf(stderr, "aw snap, can't set pin %d\n", pinnum);
+        PyErr_SetFromErrno(parapin_error);
         return NULL;
     }
-    printf("python: %1d = %d\n", pinnum, level);
+    //printf("python: %1d = %d\n", pinnum, level);
     setPin(pinnum, level);
-    puts("done");
+    //puts("done");
     Py_INCREF(args);
     return args;
 }
@@ -160,8 +164,11 @@ Pin_pulse(PinObject *self, PyObject *args){
   
   int msecson, nsecson, msecsoff, nsecsoff, n;
 
-  if (!PyArg_ParseTuple(args, "iiiii", &msecson, &nsecson, &msecsoff, &nsecsoff, &n))
+  if (!PyArg_ParseTuple(args, "iiiii", &msecson, &nsecson, &msecsoff, &nsecsoff, &n)) {
+        PyErr_SetString(PyExc_ValueError, 
+		    "?");
     return NULL;
+  }
 
   struct timespec sleepon, sleepoff;
   sleepon.tv_sec = msecson / 1000;

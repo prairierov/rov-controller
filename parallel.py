@@ -34,6 +34,7 @@ if polulu: print "Polulu mode"
 # If pins are low, they might draw too much current
 #
 bad_pins = list()
+parapwm.init()
 parapwm.port.set_output_mode(0)
 parapwm.port.set_input_mode(LP_DATA_PINS | LP_SWITCHABLE_PINS)
 for i in range(1,17):
@@ -60,18 +61,23 @@ def get_pin_num(name):
     except ValueError:
         return False
 def set_pin(pin, value):
+    if pin < 2 or pin > 9:
+        print "can't set", pin, "=", value
+        return False
     print pin, "=", value
     sign = 1 if value < 0 else 0
     if pin == 8: # centered = full power
-        parapwm.set_pin(pin, abs(255 - abs(value)))
+        parapwm.analogWrite(pin, abs(255 - abs(value)))
+    elif pin == 2: # only on or off
+        parapwm.analogWrite(pin, 255 if abs(value) > 127 else 0)
     else:
-        parapwm.set_pin(pin, abs(value))
+        parapwm.analogWrite(pin, abs(value))
     if polulu:
-        parapwm.set_pin(pin+1, 255 if sign == 0 else 0)
-        parapwm.set_pin(pin+2, 0 if sign == 0 else 255)
+        parapwm.analogWrite(pin+1, 255 if sign == 0 else 0)
+        parapwm.analogWrite(pin+2, 0 if sign == 0 else 255)
     else:
         print pin+1, "=", sign*255
-        parapwm.set_pin(pin+1, sign*255)
+        parapwm.analogWrite(pin+1, sign*255)
 
 ##
 ## Get the position of the joystick
@@ -119,6 +125,26 @@ class KBSlider(QSlider):
             num = int(event.text())
             if num == 0: num = 10
             self.setValue(int((num-1) * 255 / 9))
+        elif event.text() == '!':
+            self.setValue(0)
+        elif event.text() == '@':
+            self.setValue(int(-255/9))
+        elif event.text() == '#':
+            self.setValue(int(-255*2/9))
+        elif event.text() == '$':
+            self.setValue(int(-255*3/9))
+        elif event.text() == '%':
+            self.setValue(int(-255*4/9))
+        elif event.text() == '^':
+            self.setValue(int(-255*5/9))
+        elif event.text() == '&':
+            self.setValue(int(-255*6/9))
+        elif event.text() == '*':
+            self.setValue(int(-255*7/9))
+        elif event.text() == '(':
+            self.setValue(int(-255*8/9))
+        elif event.text() == ')':
+            self.setValue(-255)
         elif event.key() == 16777235: # up
             self.setValue(self.value() + 8)
         elif event.key() == 16777237: # down

@@ -32,7 +32,7 @@ def pulse(pin, cycle):
     noff = TIME - non
     while not threading.currentThread().cancelled():
         port[pin].pulse(0, int(non), 0, int(noff), int(1./TIME))
-    print "done"
+    #print "done"
 def analogWrite(pin, cycle):
     global port
     port[pin].write(cycle)

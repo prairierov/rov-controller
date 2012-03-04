@@ -81,9 +81,9 @@ int setPin(int pin, int cycle) {
     if (pin >= 2 && pin <= 9) {
         CYCLE[pin] = cycle;
     }
-    printf("paradriver: %1d = %d\n", pin, cycle);
+    //printf("paradriver: %1d = %d\n", pin, cycle);
     if ((int)pwmthread == 0)
         if (pthread_create(&pwmthread, NULL, do_pwm, NULL))
             fputs("can't make thread\n", stderr);
-    puts("done");
+    //puts("done");
 }
